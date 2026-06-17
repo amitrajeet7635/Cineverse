@@ -18,6 +18,9 @@ public class MovieService {
     }
 
     public Movie getMovieById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Movie ID cannot be null");
+        }
         return movieRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Movie not found with id: " + id));
     }

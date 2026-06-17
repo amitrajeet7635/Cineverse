@@ -21,8 +21,11 @@ public class BookingService {
     private MovieRepository movieRepository;
 
     public Booking createBooking(BookingRequest request, String userEmail) {
+        if (request.getMovieId() == null) {
+            throw new IllegalArgumentException("Movie ID cannot be null");
+        }
         // Validate the movie exists
-        Movie movie = movieRepository.findById(request.getMovieId())
+        movieRepository.findById(request.getMovieId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Movie not found with id: " + request.getMovieId()));
 

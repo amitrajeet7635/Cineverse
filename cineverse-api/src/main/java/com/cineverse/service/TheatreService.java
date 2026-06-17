@@ -18,11 +18,17 @@ public class TheatreService {
     }
 
     public Theatre getTheatreById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Theatre ID cannot be null");
+        }
         return theatreRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theatre not found with id: " + id));
     }
 
     public Theatre createTheatre(Theatre theatre) {
+        if (theatre == null) {
+            throw new IllegalArgumentException("Theatre cannot be null");
+        }
         return theatreRepository.save(theatre);
     }
 }

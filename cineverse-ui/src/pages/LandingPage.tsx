@@ -1,196 +1,122 @@
-import React from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const stats = [
-  { value: '500+', label: 'Movies' },
-  { value: '50K+', label: 'Bookings' },
-  { value: '4.9★', label: 'Avg Rating' },
-  { value: '120+', label: 'Screens' },
-];
-
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.4, 0, 0.2, 1] } },
-};
+import { ChevronRight, Film, CalendarDays, Ticket } from 'lucide-react';
+import { getMovies, type Movie } from '../services/api';
 
 const LandingPage = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
+
+  useEffect(() => {
+    getMovies()
+      .then((res) => setMovies(res.data.slice(0, 5))) // Just get top 5 for hero
+      .catch(console.error);
+  }, []);
+
   return (
-    <div
-      id="landing-page"
-      className="relative min-h-[calc(100vh-72px)] flex flex-col overflow-hidden"
-      style={{ background: 'var(--c-bg)' }}
-    >
-      {/* Background decoration */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Radial glow — top right */}
-        <div
-          className="absolute -top-32 right-0 w-[700px] h-[700px] rounded-full opacity-25"
-          style={{
-            background: 'radial-gradient(circle, rgba(245,197,24,0.18) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-          }}
-        />
-        {/* Radial glow — bottom left */}
-        <div
-          className="absolute bottom-0 -left-32 w-[500px] h-[500px] rounded-full opacity-20"
-          style={{
-            background: 'radial-gradient(circle, rgba(46,196,182,0.15) 0%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        {/* Film reel circles (decorative) */}
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${280 + i * 120}px`,
-              height: `${280 + i * 120}px`,
-              border: '1px solid rgba(255,255,255,0.03)',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-          />
-        ))}
-        {/* Diagonal grid lines */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                -45deg,
-                rgba(255,255,255,0.05) 0px,
-                rgba(255,255,255,0.05) 1px,
-                transparent 1px,
-                transparent 60px
-              )
-            `,
-          }}
-        />
+    <div className="bg-slate-50 min-h-screen pb-12">
+      {/* Hero Carousel Area (Mocked with a static banner) */}
+      <div className="bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 flex flex-col md:flex-row items-center justify-between">
+          <div className="md:w-1/2 mb-8 md:mb-0">
+            <div className="inline-flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1 text-sm text-slate-300 mb-6 border border-slate-700">
+              <Ticket className="h-4 w-4 text-brand-400" /> Book tickets instantly
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              Your gateway to <span className="text-brand-400">entertainment.</span>
+            </h1>
+            <p className="text-lg text-slate-400 mb-8 max-w-lg">
+              Discover the latest movies, exclusive premieres, and book your favorite seats with just a few clicks.
+            </p>
+            <div className="flex gap-4">
+              <Link to="/movies" className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-md font-medium transition flex items-center gap-2">
+                Browse Movies <ChevronRight className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+          <div className="md:w-1/2 flex justify-end">
+            {/* Abstract representation of a ticket/movie graphic */}
+            <div className="relative w-full max-w-md aspect-[4/3] bg-gradient-to-tr from-slate-800 to-slate-700 rounded-xl border border-slate-600 shadow-2xl overflow-hidden flex items-center justify-center">
+               <Film className="h-32 w-32 text-slate-600 opacity-50" />
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Hero Content */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 py-20"
-      >
-        {/* Pill badge */}
-        <motion.div variants={fadeUp}>
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8 tracking-widest uppercase"
-            style={{
-              background: 'rgba(245,197,24,0.1)',
-              border: '1px solid rgba(245,197,24,0.25)',
-              color: 'var(--c-gold)',
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-gold-DEFAULT animate-pulse" style={{ background: 'var(--c-gold)' }} />
-            Premium Cinema Booking
+      {/* Recommended Movies Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <div className="flex justify-between items-end mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">Recommended Movies</h2>
+            <p className="text-slate-500 mt-1">Catch the latest blockbusters</p>
           </div>
-        </motion.div>
-
-        {/* Main Headline */}
-        <motion.h1
-          variants={fadeUp}
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight mb-6 max-w-4xl"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
-          Experience{' '}
-          <br className="hidden sm:block" />
-          Cinema,{' '}
-          <span className="text-gold-shimmer italic">Refined.</span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          variants={fadeUp}
-          className="text-lg sm:text-xl max-w-xl mx-auto leading-relaxed mb-12"
-          style={{ color: 'var(--c-muted)', fontWeight: 400 }}
-        >
-          Cineverse delivers a frictionless, premium ticket booking experience designed for true movie enthusiasts.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
-          <Link
-            to="/movies"
-            id="hero-browse-btn"
-            className="btn-primary text-base"
-            style={{ padding: '15px 36px', borderRadius: '14px', fontSize: '0.95rem' }}
-          >
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-            </svg>
-            Browse Movies
+          <Link to="/movies" className="text-brand-600 font-medium flex items-center gap-1 hover:text-brand-700">
+            See All <ChevronRight className="h-4 w-4" />
           </Link>
-          <Link
-            to="/login"
-            id="hero-signin-btn"
-            className="btn-ghost text-base"
-            style={{ padding: '15px 36px', borderRadius: '14px', fontSize: '0.95rem' }}
-          >
-            Sign In
-          </Link>
-        </motion.div>
-
-        {/* Stats Strip */}
-        <motion.div
-          variants={fadeUp}
-          className="glass-card w-full max-w-2xl mx-auto px-6 py-5"
-          style={{ borderRadius: '20px' }}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 divide-x divide-white/5">
-            {stats.map((stat, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center justify-center gap-1 px-4 first:pl-0 last:pr-0"
-              >
-                <span
-                  className="text-2xl sm:text-3xl font-black"
-                  style={{
-                    background: 'linear-gradient(135deg, var(--c-gold), #fff8dc)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  {stat.value}
-                </span>
-                <span className="text-xs font-medium tracking-wider uppercase" style={{ color: 'var(--c-muted)' }}>
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* Bottom scroll hint */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="relative z-10 flex justify-center pb-8 animate-float"
-        aria-hidden="true"
-      >
-        <div
-          className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
-          style={{ border: '2px solid rgba(255,255,255,0.12)' }}
-        >
-          <div
-            className="w-1 h-2.5 rounded-full"
-            style={{ background: 'var(--c-gold)', animation: 'glow-pulse 2s ease-in-out infinite' }}
-          />
         </div>
-      </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {movies.length > 0 ? (
+            movies.map(movie => (
+              <Link to={`/book/${movie.id}`} key={movie.id} className="group cursor-pointer flex flex-col">
+                <div className="aspect-[2/3] bg-slate-200 rounded-xl mb-3 overflow-hidden border border-slate-200 shadow-sm transition group-hover:shadow-md relative">
+                   {/* Fallback image placeholder */}
+                   <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
+                      <Film className="h-12 w-12 text-slate-300" />
+                   </div>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                      <span className="text-white font-medium bg-brand-600 px-3 py-1 rounded-md text-sm">Book Now</span>
+                   </div>
+                </div>
+                <h3 className="font-semibold text-slate-900 truncate">{movie.title}</h3>
+                <p className="text-sm text-slate-500">{movie.genre}</p>
+              </Link>
+            ))
+          ) : (
+            // Skeletons
+            [...Array(5)].map((_, i) => (
+              <div key={i} className="flex flex-col">
+                <div className="aspect-[2/3] bg-slate-200 rounded-xl mb-3 animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-3 bg-slate-200 rounded w-1/2 animate-pulse" />
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 mb-10">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg text-brand-600">
+              <Ticket className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">M-Ticket</h3>
+              <p className="text-sm text-slate-500">Scan your mobile ticket at the gate. No printout required.</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+            <div className="bg-green-50 p-3 rounded-lg text-green-600">
+              <CalendarDays className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Advance Booking</h3>
+              <p className="text-sm text-slate-500">Book tickets up to 7 days in advance for your favorite shows.</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+            <div className="bg-purple-50 p-3 rounded-lg text-purple-600">
+              <Film className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Premium Experiences</h3>
+              <p className="text-sm text-slate-500">Enjoy IMAX, 4DX, and premium seating options.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

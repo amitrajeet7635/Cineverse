@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, MapPin, User, Menu, ChevronDown, Ticket } from 'lucide-react';
 import { isAuthenticated, getAuthName, clearAuthData } from '../services/api';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [authed, setAuthed] = useState(isAuthenticated());
   const [userName, setUserName] = useState(getAuthName());
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -17,195 +16,114 @@ const Navbar = () => {
     setMobileOpen(false);
   }, [location]);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   const handleLogout = () => {
     clearAuthData();
     setAuthed(false);
     navigate('/');
   };
 
-  const isActive = (path: string) => location.pathname === path;
-
-  const NavLink = ({ to, label }: { to: string; label: string }) => (
-    <Link
-      to={to}
-      className="relative text-sm font-medium transition-colors duration-200 group"
-      style={{ color: isActive(to) ? 'var(--c-gold)' : 'var(--c-muted)' }}
-    >
-      {label}
-      <span
-        className="absolute -bottom-1 left-0 h-0.5 rounded-full transition-all duration-300"
-        style={{
-          background: 'var(--c-gold)',
-          width: isActive(to) ? '100%' : '0%',
-        }}
-      />
-      <style>{`
-        a:hover > span { width: 100%; }
-      `}</style>
-    </Link>
-  );
-
   return (
-    <>
-      <motion.nav
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{
-          background: scrolled
-            ? 'rgba(8, 8, 16, 0.92)'
-            : 'rgba(8, 8, 16, 0.6)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid',
-          borderColor: scrolled ? 'rgba(255,255,255,0.08)' : 'transparent',
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group" id="nav-logo">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, #f5c518, #b8960c)',
-                color: '#080810',
-              }}
-            >
-              C
-            </div>
-            <span
-              className="text-xl font-black tracking-tight text-gold-shimmer"
-              style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}
-            >
-              CINEVERSE
-            </span>
-          </Link>
+    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          {/* Logo & Search */}
+          <div className="flex items-center flex-1">
+            <Link to="/" className="flex items-center gap-2 mr-8">
+              <Ticket className="h-6 w-6 text-brand-600" />
+              <span className="text-xl font-bold tracking-tight text-slate-900">
+                Cineverse
+              </span>
+            </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden sm:flex items-center gap-8">
-            <NavLink to="/" label="Home" />
-            <NavLink to="/movies" label="Movies" />
+            <div className="hidden sm:flex flex-1 max-w-lg items-center relative">
+              <Search className="h-5 w-5 text-slate-400 absolute left-3" />
+              <input 
+                type="text" 
+                placeholder="Search for Movies, Events, Plays, Sports and Activities" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
+              />
+            </div>
           </div>
 
           {/* Right Actions */}
-          <div className="hidden sm:flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-6">
+            <button className="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900">
+              <MapPin className="h-4 w-4" />
+              Select Location
+              <ChevronDown className="h-4 w-4" />
+            </button>
+
             {authed ? (
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-4"
-              >
-                {userName && (
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(245,197,24,0.2), rgba(245,197,24,0.05))',
-                        border: '1px solid rgba(245,197,24,0.3)',
-                        color: 'var(--c-gold)',
-                      }}
-                    >
-                      {userName.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-sm" style={{ color: 'var(--c-muted)' }}>
-                      Hi,{' '}
-                      <span className="font-semibold" style={{ color: 'var(--c-text)' }}>
-                        {userName}
-                      </span>
-                    </span>
+              <div className="flex items-center gap-4 border-l border-slate-200 pl-6">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 py-1 px-2 rounded-md transition">
+                  <div className="bg-brand-100 text-brand-700 h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm">
+                    {userName?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
                   </div>
-                )}
+                  <span className="text-sm font-medium text-slate-700">{userName}</span>
+                </div>
                 <button
                   onClick={handleLogout}
-                  id="nav-signout"
-                  className="btn-ghost text-sm py-2 px-4"
-                  style={{ padding: '8px 16px', borderRadius: '10px' }}
+                  className="text-sm font-medium text-red-600 hover:text-red-700"
                 >
                   Sign Out
                 </button>
-              </motion.div>
+              </div>
             ) : (
               <Link
                 to="/login"
-                id="nav-signin"
-                className="btn-primary"
-                style={{ padding: '9px 22px', borderRadius: '10px', fontSize: '0.85rem' }}
+                className="btn-primary text-sm"
               >
                 Sign In
               </Link>
             )}
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            className="sm:hidden flex flex-col gap-1.5 p-2 rounded-lg transition"
-            style={{ background: mobileOpen ? 'rgba(255,255,255,0.07)' : 'transparent' }}
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            <span
-              className="block h-0.5 w-5 rounded-full transition-all duration-300"
-              style={{
-                background: 'var(--c-text)',
-                transform: mobileOpen ? 'rotate(45deg) translateY(6px)' : 'none',
-              }}
-            />
-            <span
-              className="block h-0.5 w-5 rounded-full transition-all duration-300"
-              style={{
-                background: 'var(--c-text)',
-                opacity: mobileOpen ? 0 : 1,
-              }}
-            />
-            <span
-              className="block h-0.5 w-5 rounded-full transition-all duration-300"
-              style={{
-                background: 'var(--c-text)',
-                transform: mobileOpen ? 'rotate(-45deg) translateY(-6px)' : 'none',
-              }}
-            />
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="sm:hidden overflow-hidden"
-              style={{ borderTop: '1px solid var(--c-border)' }}
+          {/* Mobile menu button */}
+          <div className="flex items-center sm:hidden">
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="text-slate-600 hover:text-slate-900 focus:outline-none p-2"
             >
-              <div className="px-6 py-4 flex flex-col gap-4">
-                <Link to="/" className="text-sm font-medium" style={{ color: isActive('/') ? 'var(--c-gold)' : 'var(--c-muted)' }}>Home</Link>
-                <Link to="/movies" className="text-sm font-medium" style={{ color: isActive('/movies') ? 'var(--c-gold)' : 'var(--c-muted)' }}>Movies</Link>
-                <div className="divider" />
-                {authed ? (
-                  <button onClick={handleLogout} className="btn-ghost w-full" style={{ padding: '10px' }}>
-                    Sign Out
-                  </button>
-                ) : (
-                  <Link to="/login" className="btn-primary w-full text-center" style={{ padding: '10px', borderRadius: '10px' }}>
-                    Sign In
-                  </Link>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Spacer for fixed navbar */}
-      <div style={{ height: '72px' }} />
-    </>
+      {/* Secondary Nav for Categories (Desktop) */}
+      <div className="hidden sm:block border-t border-slate-100 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-10 gap-6 text-sm text-slate-600">
+            <Link to="/movies" className="hover:text-brand-600 font-medium">Movies</Link>
+            <Link to="#" className="hover:text-brand-600">Events</Link>
+            <Link to="#" className="hover:text-brand-600">Plays</Link>
+            <Link to="#" className="hover:text-brand-600">Sports</Link>
+            <Link to="#" className="hover:text-brand-600">Activities</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="sm:hidden bg-white border-t border-slate-200">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            <Link to="/movies" className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50">Movies</Link>
+            <button className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50">
+              <MapPin className="h-5 w-5" /> Location
+            </button>
+            {authed ? (
+              <button onClick={handleLogout} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-slate-50">
+                Sign Out
+              </button>
+            ) : (
+              <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium text-brand-600 hover:bg-slate-50">
+                Sign In
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 
