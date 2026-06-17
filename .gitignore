@@ -1,0 +1,39 @@
+# Dependencies
+cineverse-ui/node_modules/
+cineverse-api/build/
+cineverse-api/.gradle/
+
+# Build outputs
+cineverse-ui/build/
+cineverse-ui/dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# OS
+.DS_Store
+
+# Environment
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Gradle
+cineverse-api/gradle/wrapper/gradle-wrapper.jar
+!cineverse-api/gradle/wrapper/gradle-wrapper.properties
+
+# Testing
+cineverse-ui/coverage/
+
+# Misc
+.cache/
